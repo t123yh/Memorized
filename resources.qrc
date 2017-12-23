@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/miscellaneous">
+        <file>res/initdb.sql</file>
+        <file>res/style.qss</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>res/down.svg</file>
+    </qresource>
+</RCC>
