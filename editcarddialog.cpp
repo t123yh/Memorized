@@ -71,6 +71,7 @@ EditCardDialog::placeEditorWidget()
       currentEditorWidget = new PlainCardEditorWidget(this);
       break;
     default:
+      Crash("Unknown card type.");
       break;
   }
   if (currentEditorWidget != NULL) {
