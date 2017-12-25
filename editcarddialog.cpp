@@ -1,7 +1,7 @@
 #include "editcarddialog.h"
-#include "utils.h"
 #include "plaincardeditorwidget.h"
 #include "ui_editcarddialog.h"
+#include "utils.h"
 
 #include <QDebug>
 
@@ -16,6 +16,10 @@ EditCardDialog::EditCardDialog(QWidget* parent)
 
 EditCardDialog::~EditCardDialog()
 {
+  if (currentEditorWidget != NULL) {
+    delete currentEditorWidget;
+    currentEditorWidget = NULL;
+  }
   delete ui;
 }
 
@@ -82,7 +86,7 @@ EditCardDialog::on_cmb_Type_currentIndexChanged(int index)
   placeEditorWidget();
 }
 
-void EditCardDialog::on_buttonBox_helpRequested()
+void
+EditCardDialog::on_buttonBox_helpRequested()
 {
-
 }
