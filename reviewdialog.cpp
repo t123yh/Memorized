@@ -103,7 +103,7 @@ ReviewDialog::showCard(int cardIndex)
   CardType type = (CardType)query.value(2).toInt();
 
   if (currentReviewWidget != NULL) {
-    delete currentReviewWidget;
+    currentReviewWidget->deleteLater();
     currentReviewWidget = NULL;
   }
 

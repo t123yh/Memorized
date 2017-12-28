@@ -66,7 +66,7 @@ EditCardDialog::placeEditorWidget()
 {
   int type = ui->cmb_Type->currentData().toInt();
   if (currentEditorWidget != NULL) {
-    delete currentEditorWidget;
+    currentEditorWidget->deleteLater();
     currentEditorWidget = NULL;
   }
   switch (type) {
