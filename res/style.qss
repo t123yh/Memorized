@@ -19,7 +19,7 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-     image: url(:/images/down.svg);
+     image: url(:/images/res/down.svg);
      width: 12px;
      height: 12px;
 }
@@ -28,6 +28,10 @@ QPushButton:pressed {
     background-color: black;
     border-color: black;
     color: white;
+}
+
+QPushButton:disabled {
+    color: #999999;
 }
 
 QPushButton {

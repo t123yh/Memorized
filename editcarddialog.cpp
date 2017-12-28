@@ -29,7 +29,10 @@ EditCardDialog::setData(const QString& name,
                         const QJsonDocument& data)
 {
   ui->tb_Name->setText(name);
-  ui->cmb_Type->setCurrentIndex(type);
+
+  int typeIndex = ui->cmb_Type->findData(type);
+  ui->cmb_Type->setCurrentIndex(typeIndex);
+
   currentInputData = data;
   if (currentEditorWidget != NULL) {
     currentEditorWidget->loadData(currentInputData);
@@ -45,7 +48,7 @@ EditCardDialog::getCurrentName()
 CardType
 EditCardDialog::getCurrentType()
 {
-  return (CardType)ui->cmb_Type->currentIndex();
+  return (CardType)ui->cmb_Type->currentData().toInt();
 }
 
 QJsonDocument

@@ -17,9 +17,12 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btn_Prev">
        <property name="text">
-        <string>&lt;&lt; Previous Card</string>
+        <string>&lt;&lt; Previous</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -34,16 +37,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btn_Next">
        <property name="text">
-        <string>Next Card &gt;&gt;</string>
+        <string>Next &gt;&gt;</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="f"/>
+    <layout class="QVBoxLayout" name="layout_Review"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

@@ -20,6 +20,8 @@ private slots:
 
     void on_btn_Cards_clicked();
 
+    void on_btn_Review_clicked();
+
 private:
     Ui::MainWindow *ui;
 
