@@ -100,11 +100,11 @@ ReviewDialog::commitReviews()
 
     bool correct = performanceRating >= CorrectThreshold;
     int daysFromLastReview = lastReviewed.daysTo(QDateTime::currentDateTime());
-    double percentOverdue =
-      correct
-        ? std::min(2.0,
-              (double)daysFromLastReview / (double)expectedDaysBetweenReviews)
-        : 1;
+    double percentOverdue = correct
+                              ? std::min(2.0,
+                                         (double)daysFromLastReview /
+                                           (double)expectedDaysBetweenReviews)
+                              : 1;
 
     difficulty +=
       percentOverdue * (1.0 / 17.0) * (8.0 - 9.0 * performanceRating);
@@ -155,7 +155,8 @@ ReviewDialog::showCard(int cardIndex)
   QSqlQuery query;
   query.prepare(
     "SELECT `cards`.`Name`, `cards`.`Data`, `cards`.`Type`, "
-    "`card_groups`.`Name`, `cards`.`LastReviewed`, `cards`.`DaysBetweenReviews` "
+    "`card_groups`.`Name`, `cards`.`LastReviewed`, "
+    "`cards`.`DaysBetweenReviews` "
     "FROM `cards` "
     "INNER JOIN card_groups on `cards`.`GroupId` = `card_groups`.`Id` "
     "WHERE `cards`.`Id` = :id");
@@ -176,14 +177,11 @@ ReviewDialog::showCard(int cardIndex)
   cardDescription += cardName;
   QDateTime lastReviewed = convertToDateTime(query.value(4).toString());
   int daysBetweenReviews = query.value(5).toInt();
-  if (lastReviewed.daysTo(QDateTime::currentDateTime()) > daysBetweenReviews)
-  {
-      cardDescription += " <small><b>Overdue</b></small>";
-  }
-  else
-  {
+  if (lastReviewed.daysTo(QDateTime::currentDateTime()) >= daysBetweenReviews) {
+    cardDescription += " <small><b>Overdue</b></small>";
+  } else {
 
-      cardDescription += " <small>Not overdue</small>";
+    cardDescription += " <small>Not overdue</small>";
   }
 
   QJsonDocument dataDoc =

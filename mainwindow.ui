@@ -75,7 +75,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>ReviewNow</string>
+         <string>Review</string>
         </property>
         <property name="flat">
          <bool>false</bool>

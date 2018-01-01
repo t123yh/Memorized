@@ -33,7 +33,8 @@ SOURCES += \
     datetimedisplaydelegate.cpp \
     reviewdialog.cpp \
     cardreviewwidget.cpp \
-    plaincardreviewwidget.cpp
+    plaincardreviewwidget.cpp \
+    reviewutils.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -46,7 +47,8 @@ HEADERS += \
     datetimedisplaydelegate.h \
     reviewdialog.h \
     cardreviewwidget.h \
-    plaincardreviewwidget.h
+    plaincardreviewwidget.h \
+    reviewutils.h
 
 FORMS += \
         mainwindow.ui \
