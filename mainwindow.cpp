@@ -14,9 +14,9 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
   int overdueCount = getOverdueItemCount();
   if (overdueCount > 0) {
-    ui->btn_Review->setText(QString("Review (%1)").arg(overdueCount));
+    ui->btn_Review->setText(tr("Review (%1)").arg(overdueCount));
   } else {
-    ui->btn_Review->setText("Review");
+    ui->btn_Review->setText(tr("Review"));
   }
 }
 

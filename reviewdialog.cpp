@@ -178,10 +178,9 @@ ReviewDialog::showCard(int cardIndex)
   QDateTime lastReviewed = convertToDateTime(query.value(4).toString());
   int daysBetweenReviews = query.value(5).toInt();
   if (lastReviewed.daysTo(QDateTime::currentDateTime()) >= daysBetweenReviews) {
-    cardDescription += " <small><b>Overdue</b></small>";
+    cardDescription += tr(" <small><b>Overdue</b></small>");
   } else {
-
-    cardDescription += " <small>Not overdue</small>";
+    cardDescription += tr(" <small>Not overdue</small>");
   }
 
   QJsonDocument dataDoc =
