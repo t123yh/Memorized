@@ -16,7 +16,7 @@ public:
   virtual double getPerformanceRating() = 0;
 
 signals:
-  void reviewed(double performanceRating);
+  void reviewed();
 
 public slots:
 

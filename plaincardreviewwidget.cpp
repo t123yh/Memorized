@@ -10,6 +10,12 @@ PlainCardReviewWidget::PlainCardReviewWidget(QWidget* parent)
 {
   ui->setupUi(this);
   backShown = false;
+
+#define CONN_RB(_X_) (connect(ui->rb_##_X_, &QRadioButton::clicked, this, &PlainCardReviewWidget::reviewed))
+  CONN_RB(Forgot);
+  CONN_RB(Fuzzy);
+  CONN_RB(Fair);
+  CONN_RB(Good);
 }
 
 PlainCardReviewWidget::~PlainCardReviewWidget()

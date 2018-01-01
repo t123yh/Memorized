@@ -7,6 +7,9 @@
 #include <QJsonDocument>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <algorithm>
+
+const double CorrectThreshold = 0.6;
 
 ReviewDialog::ReviewDialog(QWidget* parent)
   : QDialog(parent)
@@ -40,6 +43,9 @@ ReviewDialog::showCardGroups()
 void
 ReviewDialog::startReviewSession(int groupId)
 {
+  if (!currentSessionPerformance.empty()) {
+    commitReviews();
+  }
   currentSessionCards.clear();
   currentSessionPerformance.clear();
   QSqlQuery query;
@@ -67,6 +73,76 @@ ReviewDialog::startReviewSession(int groupId)
 }
 
 void
+ReviewDialog::commitReviews()
+{
+  for (auto iter = currentSessionPerformance.cbegin();
+       iter != currentSessionPerformance.cend();
+       iter++) {
+    int cardId = iter.key();
+    double performanceRating = iter.value();
+    QSqlQuery query;
+    query.prepare(
+      "SELECT `LastReviewed`, `DaysBetweenReviews`, `Difficulty` FROM `cards` "
+      "WHERE `Id` = :id");
+    query.bindValue(":id", cardId);
+    if (!query.exec()) {
+      Crash(query.lastError().text());
+    }
+    if (!query.first()) {
+      Crash("Card not found!");
+    }
+    QDateTime lastReviewed = convertToDateTime(query.value(0).toString());
+    int expectedDaysBetweenReviews = query.value(1).toInt();
+    double difficulty = query.value(2).toDouble();
+
+    // Credit: algorithm from here
+    // http://www.blueraja.com/blog/477/a-better-spaced-repetition-learning-algorithm-sm2
+
+    bool correct = performanceRating >= CorrectThreshold;
+    int daysFromLastReview = lastReviewed.daysTo(QDateTime::currentDateTime());
+    double percentOverdue =
+      correct
+        ? std::min(2.0,
+              (double)daysFromLastReview / (double)expectedDaysBetweenReviews)
+        : 1;
+
+    difficulty +=
+      percentOverdue * (1.0 / 17.0) * (8.0 - 9.0 * performanceRating);
+    double difficultyWeight = 3 - 1.7 * difficulty;
+    expectedDaysBetweenReviews *=
+      correct ? 1 + (difficultyWeight - 1) * percentOverdue
+              : 1 / difficultyWeight * difficultyWeight;
+
+    query.prepare(
+      "INSERT INTO `review_history` "
+      "(`CardId`, `DateTime`, `PerformanceRating`, "
+      "`DifficultyAfter`, `DaysBetweenReviewsAfter`) "
+      "VALUES (:id, :currentTime, :rating, :difficulty, :daysBetween)");
+    query.bindValue(":id", cardId);
+    query.bindValue(":currentTime", getCurrentDateTime());
+    query.bindValue(":rating", performanceRating);
+    query.bindValue(":difficulty", difficulty);
+    query.bindValue(":daysBetween", expectedDaysBetweenReviews);
+    if (!query.exec()) {
+      Crash(query.lastError().text());
+    }
+
+    query.prepare("UPDATE `cards` SET `LastReviewed` = :currentTime, "
+                  "`DaysBetweenReviews` = :daysBetween, "
+                  "`Difficulty` = :difficulty "
+                  "WHERE `Id` = :id");
+    query.bindValue(":id", cardId);
+    query.bindValue(":currentTime", getCurrentDateTime());
+    query.bindValue(":difficulty", difficulty);
+    query.bindValue(":daysBetween", expectedDaysBetweenReviews);
+    if (!query.exec()) {
+      Crash(query.lastError().text());
+    }
+  }
+  currentSessionPerformance.clear();
+}
+
+void
 ReviewDialog::showCard(int cardIndex)
 {
   if (cardIndex < 0 || cardIndex >= currentSessionCards.size()) {
@@ -77,10 +153,12 @@ ReviewDialog::showCard(int cardIndex)
 
   int cardId = currentSessionCards[currentCardIndex];
   QSqlQuery query;
-  query.prepare("SELECT `cards`.`Name`, `cards`.`Data`, `cards`.`Type`, `card_groups`.`Name` "
-                "FROM `cards` "
-                "INNER JOIN card_groups on `cards`.`GroupId` = `card_groups`.`Id` "
-                "WHERE `cards`.`Id` = :id");
+  query.prepare(
+    "SELECT `cards`.`Name`, `cards`.`Data`, `cards`.`Type`, "
+    "`card_groups`.`Name`, `cards`.`LastReviewed`, `cards`.`DaysBetweenReviews` "
+    "FROM `cards` "
+    "INNER JOIN card_groups on `cards`.`GroupId` = `card_groups`.`Id` "
+    "WHERE `cards`.`Id` = :id");
   query.bindValue(":id", cardId);
   if (!query.exec()) {
     Crash(query.lastError().text());
@@ -92,11 +170,21 @@ ReviewDialog::showCard(int cardIndex)
   QString cardName = query.value(0).toString();
   QString cardGroupName = query.value(3).toString();
   QString cardDescription;
-  if (getCurrentCardGroup() == GROUP_ALL)
-  {
+  if (getCurrentCardGroup() == GROUP_ALL) {
     cardDescription += QString("<small><i>%1</i></small> ").arg(cardGroupName);
   }
   cardDescription += cardName;
+  QDateTime lastReviewed = convertToDateTime(query.value(4).toString());
+  int daysBetweenReviews = query.value(5).toInt();
+  if (lastReviewed.daysTo(QDateTime::currentDateTime()) > daysBetweenReviews)
+  {
+      cardDescription += " <small><b>Overdue</b></small>";
+  }
+  else
+  {
+
+      cardDescription += " <small>Not overdue</small>";
+  }
 
   QJsonDocument dataDoc =
     QJsonDocument::fromJson(query.value(1).toString().toUtf8());
@@ -126,6 +214,10 @@ ReviewDialog::showCard(int cardIndex)
       currentReviewWidget->resetPerformanceRating();
     }
 
+    connect(currentReviewWidget,
+            &CardReviewWidget::reviewed,
+            this,
+            &ReviewDialog::on_reviewed);
     ui->layout_Review->addWidget(currentReviewWidget);
   }
 }
@@ -142,9 +234,10 @@ ReviewDialog::adjustNavigationButton()
   }
 }
 
-int ReviewDialog::getCurrentCardGroup()
+int
+ReviewDialog::getCurrentCardGroup()
 {
-    return ui->cb_CardGroup->currentData().toInt();
+  return ui->cb_CardGroup->currentData().toInt();
 }
 
 void
@@ -164,4 +257,45 @@ void
 ReviewDialog::on_btn_Next_clicked()
 {
   showCard(currentCardIndex + 1);
+}
+
+void
+ReviewDialog::on_reviewed()
+{
+  double rating = currentReviewWidget->getPerformanceRating();
+  int cardId = currentSessionCards[currentCardIndex];
+  if (rating < 0) {
+    if (currentSessionPerformance.contains(cardId)) {
+      currentSessionPerformance.remove(cardId);
+    }
+    return;
+  }
+  currentSessionPerformance[cardId] = rating;
+}
+
+void
+ReviewDialog::on_btn_Reset_clicked()
+{
+  currentSessionPerformance.clear();
+  if (currentSessionCards.count() > 0) {
+    showCard(0);
+  }
+}
+
+void
+ReviewDialog::on_btn_Exit_clicked()
+{
+  this->accept();
+}
+
+void
+ReviewDialog::on_ReviewDialog_accepted()
+{
+  commitReviews();
+}
+
+void
+ReviewDialog::on_ReviewDialog_rejected()
+{
+  commitReviews();
 }

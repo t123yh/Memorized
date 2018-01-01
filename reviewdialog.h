@@ -31,12 +31,24 @@ private slots:
 
   void on_btn_Next_clicked();
 
+  void on_reviewed();
+
+  void on_btn_Reset_clicked();
+
+  void on_btn_Exit_clicked();
+
+  void on_ReviewDialog_accepted();
+
+  void on_ReviewDialog_rejected();
+
 private:
   Ui::ReviewDialog* ui;
   CardReviewWidget* currentReviewWidget = NULL;
 
   void showCardGroups();
   void startReviewSession(int groupId);
+  void commitReviews();
+
   void showCard(int cardIndex);
   void adjustNavigationButton();
 
