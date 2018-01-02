@@ -34,21 +34,17 @@ QString getFancyDateTimeString(const QDateTime& dt)
 {
     auto current = QDateTime::currentDateTime();
     qint64 secs = dt.secsTo(current);
-    if (secs < 60)
+    if (secs < 60 * 2)
     {
         return QObject::tr("just now");
     }
-    else if (secs < 60 * 2)
+    else if (secs < 60 * 60 * 2)
     {
-        return QObject::tr("a minute ago");
-    }
-    else if (secs < 60 * 60)
-    {
-        return QObject::tr("%1 minutes ago").arg(secs / 60);
+        return QObject::tr("%1m ago").arg(secs / 60);
     }
     else if (secs < 60 * 60 * 24)
     {
-        return QObject::tr("%1 hours ago").arg(secs / 60 / 60);
+        return QObject::tr("%1h ago").arg(secs / 60 / 60);
     }
     else if (dt.date().daysTo(current.date()) == 1)
     {
@@ -56,7 +52,7 @@ QString getFancyDateTimeString(const QDateTime& dt)
     }
     else if (secs < 60 * 60 * 24 * 30)
     {
-        return QObject::tr("%1 days ago").arg(dt.date().daysTo(current.date()));
+        return QObject::tr("%1d ago").arg(dt.date().daysTo(current.date()));
     }
     else if (dt.date().year() == current.date().year())
     {
