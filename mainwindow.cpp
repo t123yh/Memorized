@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "cardsdialog.h"
 #include "reviewdialog.h"
+#include "utils.h"
 #include "reviewutils.h"
 #include "ui_mainwindow.h"
 
@@ -40,7 +41,7 @@ MainWindow::on_btn_Review_clicked()
 
 void MainWindow::refreshCount()
 {
-  int overdueCount = getOverdueItemCount();
+  int overdueCount = getOverdueItemCount(GROUP_ALL);
   if (overdueCount > 0) {
     ui->btn_Review->setText(tr("Review (%1)").arg(overdueCount));
   } else {

@@ -2,6 +2,7 @@
 #include "plaincardreviewwidget.h"
 #include "ui_reviewdialog.h"
 #include "utils.h"
+#include "reviewutils.h"
 
 #include <QDebug>
 #include <QJsonDocument>
@@ -168,7 +169,15 @@ ReviewDialog::showCard(int cardIndex)
     Crash("No such card!");
   }
 
-  ui->lb_CardCount->setText(tr("Card %1 / %2").arg(currentCardIndex + 1).arg(currentSessionCards.count()));
+  int overdueCount = getOverdueItemCount(getCurrentCardGroup());
+  // Hide overdue card count if current card is not overdue
+  QString cardCountTemplate = currentCardIndex < overdueCount ?
+              tr("Card %1 / %3 / %2") :
+              tr("Card %1 / %2");
+  ui->lb_CardCount->setText(cardCountTemplate
+                            .arg(currentCardIndex + 1)
+                            .arg(currentSessionCards.count())
+                            .arg(overdueCount));
 
   QString cardName = query.value(0).toString();
   QString cardGroupName = query.value(3).toString();
@@ -177,13 +186,16 @@ ReviewDialog::showCard(int cardIndex)
     cardDescription += QString("<small><i>%1</i></small> ").arg(cardGroupName);
   }
   cardDescription += cardName;
+
   QDateTime lastReviewed = convertToDateTime(query.value(4).toString());
   int daysBetweenReviews = query.value(5).toInt();
+  QString moreInfoText(tr("%1 ").arg(getFancyDateTimeString(lastReviewed)));
   if (lastReviewed.daysTo(QDateTime::currentDateTime()) >= daysBetweenReviews) {
-    cardDescription += tr(" <small><b>Overdue</b></small>");
+    moreInfoText += tr(" <b>Overdue</b>");
   } else {
-    cardDescription += tr(" <small>Not overdue</small>");
+    moreInfoText += tr(" Not overdue");
   }
+  ui->lb_MoreInfo->setText(moreInfoText);
 
   QJsonDocument dataDoc =
     QJsonDocument::fromJson(query.value(1).toString().toUtf8());

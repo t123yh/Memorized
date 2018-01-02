@@ -15,10 +15,6 @@ class ReviewDialog;
 class ReviewDialog : public QDialog
 {
   Q_OBJECT
-  enum
-  {
-    GROUP_ALL = -1
-  };
 
 public:
   explicit ReviewDialog(QWidget* parent = 0);

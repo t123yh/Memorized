@@ -1,21 +1,33 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include <QString>
 #include <QDateTime>
 #include <QJsonObject>
+#include <QString>
 
-enum CardType {
-    PLAIN_CARD = 1
+enum CardType
+{
+  PLAIN_CARD = 1
 };
 
-QString getCurrentDateTime();
+enum
+{
+  GROUP_ALL = -1
+};
 
-QDateTime convertToDateTime(const QString& str);
+const int ID_ALL = -1;
 
-QString getFancyDateTimeString(const QDateTime& dt);
+QString
+getCurrentDateTime();
 
-QJsonObject ObjectFromString(const QString& in);
+QDateTime
+convertToDateTime(const QString& str);
+
+QString
+getFancyDateTimeString(const QDateTime& dt);
+
+QJsonObject
+ObjectFromString(const QString& in);
 
 void
 Crash(const QString& reason);
