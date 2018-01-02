@@ -7,7 +7,7 @@ getOverdueItemCount()
 {
   QSqlQuery query;
   query.prepare("SELECT count(*) FROM cards "
-                "WHERE julianday('now') - julianday(`LastReviewed`)"
+                "WHERE (round(julianday('now') + 0.5) - round(julianday(`LastReviewed`) + 0.5))"
                 "    >= `DaysBetweenReviews`");
   if (!query.exec()) {
     Crash(query.lastError().text());
