@@ -25,9 +25,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-
-    QSqlRelationalTableModel *cardsModel;
-    QSqlRelationalTableModel *cardGroupsModel;
+    void refreshCount();
 };
 
 #endif // MAINWINDOW_H

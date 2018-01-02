@@ -12,12 +12,7 @@ MainWindow::MainWindow(QWidget* parent)
   , ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  int overdueCount = getOverdueItemCount();
-  if (overdueCount > 0) {
-    ui->btn_Review->setText(tr("Review (%1)").arg(overdueCount));
-  } else {
-    ui->btn_Review->setText(tr("Review"));
-  }
+  refreshCount();
 }
 
 MainWindow::~MainWindow()
@@ -31,13 +26,24 @@ MainWindow::on_btn_Cards_clicked()
   CardsDialog* dialog = new CardsDialog(this);
   dialog->setAttribute(Qt::WA_DeleteOnClose);
   dialog->exec();
+  refreshCount();
 }
 
 void
 MainWindow::on_btn_Review_clicked()
 {
-
   ReviewDialog* dialog = new ReviewDialog(this);
   dialog->setAttribute(Qt::WA_DeleteOnClose);
   dialog->exec();
+  refreshCount();
+}
+
+void MainWindow::refreshCount()
+{
+  int overdueCount = getOverdueItemCount();
+  if (overdueCount > 0) {
+    ui->btn_Review->setText(tr("Review (%1)").arg(overdueCount));
+  } else {
+    ui->btn_Review->setText(tr("Review"));
+  }
 }
