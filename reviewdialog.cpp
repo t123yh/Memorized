@@ -168,6 +168,8 @@ ReviewDialog::showCard(int cardIndex)
     Crash("No such card!");
   }
 
+  ui->lb_CardCount->setText(tr("Card %1 / %2").arg(currentCardIndex + 1).arg(currentSessionCards.count()));
+
   QString cardName = query.value(0).toString();
   QString cardGroupName = query.value(3).toString();
   QString cardDescription;

@@ -64,6 +64,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="lb_CardCount">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btn_Reset">
        <property name="text">
         <string>Reset</string>
