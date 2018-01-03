@@ -172,8 +172,7 @@ ReviewDialog::showCard(int cardIndex)
   int overdueCount = getOverdueItemCount(getCurrentCardGroup());
   // Hide overdue card count if current card is not overdue
   QString cardCountTemplate = currentCardIndex < overdueCount ?
-              tr("Card %1 / %3 / %2") :
-              tr("Card %1 / %2");
+              "%1 / %3 / %2" : "%1 / %2";
   ui->lb_CardCount->setText(cardCountTemplate
                             .arg(currentCardIndex + 1)
                             .arg(currentSessionCards.count())
