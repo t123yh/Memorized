@@ -111,10 +111,18 @@ ReviewDialog::commitReviews()
 
     difficulty +=
       percentOverdue * (1.0 / 17.0) * (8.0 - 9.0 * performanceRating);
+    if (difficulty < 0)
+      difficulty = 0;
+    if (difficulty > 1)
+      difficulty = 1;
     double difficultyWeight = 3 - 1.7 * difficulty;
+
     expectedDaysBetweenReviews *=
       correct ? 1 + (difficultyWeight - 1) * percentOverdue
               : 1 / difficultyWeight * difficultyWeight;
+    if (expectedDaysBetweenReviews == 0) {
+      expectedDaysBetweenReviews = 1;
+    }
 
     query.prepare(
       "INSERT INTO `review_history` "
@@ -281,7 +289,8 @@ ReviewDialog::on_reviewed()
     }
     return;
   }
-  currentSessionPerformance[cardId] = std::make_tuple(rating, QDateTime::currentDateTime());
+  currentSessionPerformance[cardId] =
+    std::make_tuple(rating, QDateTime::currentDateTime());
 }
 
 void
