@@ -27,12 +27,15 @@ public:
 private slots:
     void on_cmb_Type_currentIndexChanged(int index);
 
-    void on_buttonBox_helpRequested();
+    void on_editor_ValueChanged();
+
+    void on_btn_Cancel_clicked();
 
 private:
     Ui::EditCardDialog *ui;
     CardEditorWidget *currentEditorWidget = NULL;
     QJsonDocument currentInputData;
+    bool valueChanged = false;
 
     void placeEditorWidget();
 };

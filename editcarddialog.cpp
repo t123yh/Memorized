@@ -3,7 +3,8 @@
 #include "ui_editcarddialog.h"
 #include "utils.h"
 
-#include <QDebug>
+#include <QMessageBox>
+#include <QLineEdit>
 
 EditCardDialog::EditCardDialog(QWidget* parent)
   : QDialog(parent)
@@ -12,6 +13,8 @@ EditCardDialog::EditCardDialog(QWidget* parent)
   ui->setupUi(this);
   ui->cmb_Type->addItem(tr("Plain Card"), PLAIN_CARD);
   ui->cmb_Type->setCurrentIndex(0);
+  connect(ui->tb_Name, &QLineEdit::textEdited,
+          this, &EditCardDialog::on_editor_ValueChanged);
 }
 
 EditCardDialog::~EditCardDialog()
@@ -79,6 +82,8 @@ EditCardDialog::placeEditorWidget()
   }
   if (currentEditorWidget != NULL) {
     currentEditorWidget->loadData(currentInputData);
+    connect(currentEditorWidget, &CardEditorWidget::valueChanged,
+            this, &EditCardDialog::on_editor_ValueChanged);
     ui->layout_Editor->addWidget(currentEditorWidget);
   }
 }
@@ -91,6 +96,23 @@ EditCardDialog::on_cmb_Type_currentIndexChanged(int index)
 }
 
 void
-EditCardDialog::on_buttonBox_helpRequested()
+EditCardDialog::on_editor_ValueChanged()
 {
+  valueChanged = true;
+}
+
+void
+EditCardDialog::on_btn_Cancel_clicked()
+{
+  if (this->valueChanged) {
+    QMessageBox::StandardButton reply = QMessageBox::question(
+      this,
+      "L:D_N:dialog_ID:cancelconfirm",
+      QString(tr("Are you sure you want to discard all changes?")),
+      QMessageBox::Yes | QMessageBox::No);
+    if (reply != QMessageBox::Yes) {
+      return;
+    }
+  }
+  reject();
 }

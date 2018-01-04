@@ -101,21 +101,5 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>btn_Cancel</sender>
-   <signal>clicked()</signal>
-   <receiver>EditCardDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>783</x>
-     <y>367</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>221</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>
