@@ -54,10 +54,11 @@ CardsDialog::initializeModels()
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("DaysBetweenReviews"));
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Id"));
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Data"));
-  ui->tbl_Cards->setItemDelegateForColumn(cardsModel->fieldIndex("created"),
+  ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Type"));
+  ui->tbl_Cards->setItemDelegateForColumn(cardsModel->fieldIndex("Created"),
                                           new DateTimeDisplayDelegate);
   ui->tbl_Cards->setItemDelegateForColumn(
-    cardsModel->fieldIndex("lastReviewed"), new DateTimeDisplayDelegate);
+    cardsModel->fieldIndex("LastReviewed"), new DateTimeDisplayDelegate);
 }
 
 int
