@@ -37,6 +37,8 @@ private slots:
 
   void on_ReviewDialog_rejected();
 
+  void on_btn_Clear_clicked();
+
 private:
   Ui::ReviewDialog* ui;
   CardReviewWidget* currentReviewWidget = NULL;

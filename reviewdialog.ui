@@ -78,6 +78,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="btn_Clear">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btn_Reset">
        <property name="text">
         <string>Reset</string>

@@ -1,11 +1,12 @@
 #include "reviewdialog.h"
 #include "plaincardreviewwidget.h"
+#include "reviewutils.h"
 #include "ui_reviewdialog.h"
 #include "utils.h"
-#include "reviewutils.h"
 
 #include <QDebug>
 #include <QJsonDocument>
+#include <QMessageBox>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <algorithm>
@@ -171,12 +172,11 @@ ReviewDialog::showCard(int cardIndex)
 
   int overdueCount = getOverdueItemCount(getCurrentCardGroup());
   // Hide overdue card count if current card is not overdue
-  QString cardCountTemplate = currentCardIndex < overdueCount ?
-              "%1 / %3 / %2" : "%1 / %2";
-  ui->lb_CardCount->setText(cardCountTemplate
-                            .arg(currentCardIndex + 1)
-                            .arg(currentSessionCards.count())
-                            .arg(overdueCount));
+  QString cardCountTemplate =
+    currentCardIndex < overdueCount ? "%1 / %3 / %2" : "%1 / %2";
+  ui->lb_CardCount->setText(cardCountTemplate.arg(currentCardIndex + 1)
+                              .arg(currentSessionCards.count())
+                              .arg(overdueCount));
 
   QString cardName = query.value(0).toString();
   QString cardGroupName = query.value(3).toString();
@@ -284,15 +284,6 @@ ReviewDialog::on_reviewed()
 }
 
 void
-ReviewDialog::on_btn_Reset_clicked()
-{
-  currentSessionPerformance.clear();
-  if (currentSessionCards.count() > 0) {
-    showCard(0);
-  }
-}
-
-void
 ReviewDialog::on_btn_Exit_clicked()
 {
   this->accept();
@@ -308,4 +299,29 @@ void
 ReviewDialog::on_ReviewDialog_rejected()
 {
   commitReviews();
+}
+
+void
+ReviewDialog::on_btn_Reset_clicked()
+{
+  if (currentReviewWidget != NULL) {
+    currentReviewWidget->resetPerformanceRating();
+  }
+}
+
+void
+ReviewDialog::on_btn_Clear_clicked()
+{
+  QMessageBox::StandardButton reply =
+    QMessageBox::question(this,
+                          "L:D_N:dialog_ID:clearconfirm",
+                          QString(tr("Clear %1 reviews you've just done?"))
+                            .arg(currentSessionPerformance.count()),
+                          QMessageBox::Yes | QMessageBox::No);
+  if (reply == QMessageBox::Yes) {
+    currentSessionPerformance.clear();
+    if (currentSessionCards.count() > 0) {
+      showCard(0);
+    }
+  }
 }
