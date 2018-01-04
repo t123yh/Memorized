@@ -7,11 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>833</width>
-    <height>444</height>
+    <height>300</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>L:D_N:dialog_ID:card_RKB:true_RC:true</string>
+   <string>L:D_N:dialog_ID:card_RKB:true</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">font-size: 6pt;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
    <item>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>396</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,13 +38,25 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QTextEdit" name="te_Back"/>
+      <widget class="QTextEdit" name="te_Back">
+       <property name="styleSheet">
+        <string notr="true">font-size: 8pt;</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QTextEdit" name="te_Notes"/>
+      <widget class="QTextEdit" name="te_Notes">
+       <property name="styleSheet">
+        <string notr="true">font-size: 8pt;</string>
+       </property>
+      </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QTextEdit" name="te_Front"/>
+      <widget class="QTextEdit" name="te_Front">
+       <property name="styleSheet">
+        <string notr="true">font-size: 8pt;</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
