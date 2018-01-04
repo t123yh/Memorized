@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QSqlTableModel>
 #include <QVector>
+#include <tuple>
 
 namespace Ui {
 class ReviewDialog;
@@ -52,7 +53,7 @@ private:
 
   int getCurrentCardGroup();
 
-  QHash<int, double> currentSessionPerformance;
+  QHash<int, std::tuple<double, QDateTime> > currentSessionPerformance;
   QVector<int> currentSessionCards;
   int currentCardIndex;
 };

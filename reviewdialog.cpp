@@ -81,7 +81,8 @@ ReviewDialog::commitReviews()
        iter != currentSessionPerformance.cend();
        iter++) {
     int cardId = iter.key();
-    double performanceRating = iter.value();
+    double performanceRating = std::get<0>(iter.value());
+    QDateTime reviewTime = std::get<1>(iter.value());
     QSqlQuery query;
     query.prepare(
       "SELECT `LastReviewed`, `DaysBetweenReviews`, `Difficulty` FROM `cards` "
@@ -121,7 +122,7 @@ ReviewDialog::commitReviews()
       "`DifficultyAfter`, `DaysBetweenReviewsAfter`) "
       "VALUES (:id, :currentTime, :rating, :difficulty, :daysBetween)");
     query.bindValue(":id", cardId);
-    query.bindValue(":currentTime", getCurrentDateTime());
+    query.bindValue(":currentTime", toSqlTime(reviewTime));
     query.bindValue(":rating", performanceRating);
     query.bindValue(":difficulty", difficulty);
     query.bindValue(":daysBetween", expectedDaysBetweenReviews);
@@ -134,7 +135,7 @@ ReviewDialog::commitReviews()
                   "`Difficulty` = :difficulty "
                   "WHERE `Id` = :id");
     query.bindValue(":id", cardId);
-    query.bindValue(":currentTime", getCurrentDateTime());
+    query.bindValue(":currentTime", toSqlTime(reviewTime));
     query.bindValue(":difficulty", difficulty);
     query.bindValue(":daysBetween", expectedDaysBetweenReviews);
     if (!query.exec()) {
@@ -219,7 +220,7 @@ ReviewDialog::showCard(int cardIndex)
 
     if (currentSessionPerformance.contains(cardId)) {
       currentReviewWidget->setPerformanceRating(
-        currentSessionPerformance[cardId]);
+        std::get<0>(currentSessionPerformance[cardId]));
     } else {
       currentReviewWidget->resetPerformanceRating();
     }
@@ -280,7 +281,7 @@ ReviewDialog::on_reviewed()
     }
     return;
   }
-  currentSessionPerformance[cardId] = rating;
+  currentSessionPerformance[cardId] = std::make_tuple(rating, QDateTime::currentDateTime());
 }
 
 void
