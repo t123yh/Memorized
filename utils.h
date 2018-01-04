@@ -20,6 +20,9 @@ const int ID_ALL = -1;
 QString
 getCurrentDateTime();
 
+QString
+toSqlTime(QDateTime dt);
+
 QDateTime
 convertToDateTime(const QString& str);
 
