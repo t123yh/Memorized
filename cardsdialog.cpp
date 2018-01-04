@@ -149,13 +149,20 @@ CardsDialog::on_btn_AddCard_clicked()
 void
 CardsDialog::on_btn_RemoveCard_clicked()
 {
-  QSqlQuery query;
-  query.prepare("DELETE FROM `cards` WHERE `Id` = :id");
-  query.bindValue(":id", getCurrentCardId());
-  if (!query.exec()) {
-    Crash(query.lastError().text());
+  QMessageBox::StandardButton reply = QMessageBox::question(
+    this,
+    "L:D_N:dialog_ID:removeconfirm",
+    QString(tr("Are you sure you want to remove this card?")),
+    QMessageBox::Yes | QMessageBox::No);
+  if (reply == QMessageBox::Yes) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM `cards` WHERE `Id` = :id");
+    query.bindValue(":id", getCurrentCardId());
+    if (!query.exec()) {
+      Crash(query.lastError().text());
+    }
+    showCards();
   }
-  showCards();
 }
 
 void
