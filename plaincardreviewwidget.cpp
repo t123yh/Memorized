@@ -2,6 +2,7 @@
 #include "ui_plaincardreviewwidget.h"
 #include "utils.h"
 
+#include <QDebug>
 #include <QStringBuilder>
 
 PlainCardReviewWidget::PlainCardReviewWidget(QWidget* parent)
@@ -11,11 +12,19 @@ PlainCardReviewWidget::PlainCardReviewWidget(QWidget* parent)
   ui->setupUi(this);
   backShown = false;
 
-#define CONN_RB(_X_) (connect(ui->rb_##_X_, &QRadioButton::clicked, this, &PlainCardReviewWidget::reviewed))
-  CONN_RB(Forgot);
-  CONN_RB(Fuzzy);
-  CONN_RB(Fair);
-  CONN_RB(Good);
+#define INIT_BTN(_X_)                                                          \
+  {                                                                            \
+    connect(ui->rb_##_X_,                                                      \
+            &QRadioButton::clicked,                                            \
+            this,                                                              \
+            &PlainCardReviewWidget::reviewed);                                 \
+    ratingButtonGroup.addButton(ui->rb_##_X_);                                 \
+  }
+
+  INIT_BTN(Forgot);
+  INIT_BTN(Fuzzy);
+  INIT_BTN(Fair);
+  INIT_BTN(Good);
 }
 
 PlainCardReviewWidget::~PlainCardReviewWidget()
@@ -68,10 +77,12 @@ PlainCardReviewWidget::setPerformanceRating(double performanceRating)
 void
 PlainCardReviewWidget::resetPerformanceRating()
 {
-  ui->rb_Forgot->setChecked(false);
-  ui->rb_Fuzzy->setChecked(false);
-  ui->rb_Fair->setChecked(false);
-  ui->rb_Good->setChecked(false);
+  ratingButtonGroup.setExclusive(false);
+  auto currentBtn = ratingButtonGroup.checkedButton();
+  if (currentBtn != NULL) {
+    currentBtn->setChecked(false);
+  }
+  ratingButtonGroup.setExclusive(true);
 }
 
 void

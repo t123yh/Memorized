@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QString>
 #include <QWidget>
+#include <QButtonGroup>
 
 namespace Ui {
 class PlainCardReviewWidget;
@@ -33,6 +34,7 @@ private:
   QString currentBack;
   QString currentNotes;
   bool backShown;
+  QButtonGroup ratingButtonGroup;
 };
 
 #endif // PLAINCARDREVIEWWIDGET_H
