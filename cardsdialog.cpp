@@ -234,9 +234,14 @@ CardsDialog::on_btn_RemoveGroup_clicked()
   int count = query.value(0).toInt();
   if (count != 0) {
     QMessageBox::StandardButton reply = QMessageBox::question(
-      this, "L:D_N:dialog_ID:deleteconfirm", QString(tr("This group has %1 cards. Are you sure you want to delete the whole card group?")).arg(count), QMessageBox::Yes | QMessageBox::No);
+      this,
+      "L:D_N:dialog_ID:deleteconfirm",
+      QString(tr("This group has %1 cards. Are you sure you want to delete the "
+                 "whole card group?"))
+        .arg(count),
+      QMessageBox::Yes | QMessageBox::No);
     if (reply != QMessageBox::Yes) {
-        return;
+      return;
     }
   }
 
