@@ -39,6 +39,8 @@ CardsDialog::initializeModels()
   int groupIdIndex = cardsModel->fieldIndex("GroupId");
   cardsModel->setRelation(groupIdIndex,
                           QSqlRelation("card_groups", "Id", "Name"));
+  cardsModel->setSort(cardsModel->fieldIndex("Created"),
+                           Qt::DescendingOrder);
   cardsModel->select();
 
   cardGroupsModel = new QSqlTableModel(this);
