@@ -250,6 +250,12 @@ _isspace(int c)
 	return c == ' ' || c == '\n';
 }
 
+static inline int
+_issuperscriptend(int c)
+{
+    return _isspace(c) || c == '$' || c == '^';
+}
+
 /****************************
  * INLINE PARSING FUNCTIONS *
  ****************************/
@@ -1096,7 +1102,7 @@ char_superscript(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 	} else {
 		sup_start = sup_len = 1;
 
-		while (sup_len < size && !_isspace(data[sup_len]))
+        while (sup_len < size && !_issuperscriptend(data[sup_len]))
 			sup_len++;
 	}
 
@@ -1105,7 +1111,7 @@ char_superscript(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 
 	sup = rndr_newbuf(rndr, BUFFER_SPAN);
 	parse_inline(sup, rndr, data + sup_start, sup_len - sup_start);
-	rndr->cb.superscript(ob, sup, rndr->opaque);
+    rndr->cb.superscript(ob, sup, data[0], rndr->opaque);
 	rndr_popbuf(rndr, BUFFER_SPAN);
 
 	return (sup_start == 2) ? sup_len + 1 : sup_len;
@@ -2441,8 +2447,11 @@ sd_markdown_new(
 		md->active_char['w'] = MD_CHAR_AUTOLINK_WWW;
 	}
 
-	if (extensions & MKDEXT_SUPERSCRIPT)
+    if (extensions & MKDEXT_SUPERSCRIPT)
+    {
 		md->active_char['^'] = MD_CHAR_SUPERSCRIPT;
+        md->active_char['$'] = MD_CHAR_SUPERSCRIPT;
+    }
 
 	/* Extension data */
 	md->ext_flags = extensions;

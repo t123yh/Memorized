@@ -470,12 +470,26 @@ rndr_tablecell(struct buf *ob, const struct buf *text, int flags, void *opaque)
 }
 
 static int
-rndr_superscript(struct buf *ob, const struct buf *text, void *opaque)
+rndr_superscript(struct buf *ob, const struct buf *text, unsigned char character, void *opaque)
 {
 	if (!text || !text->size) return 0;
-	BUFPUTSL(ob, "<sup>");
+    if (character == '^')
+    {
+        BUFPUTSL(ob, "<sup>");
+    }
+    else if (character == '$')
+    {
+        BUFPUTSL(ob, "<sub>");
+    }
 	bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "</sup>");
+    if (character == '^')
+    {
+        BUFPUTSL(ob, "</sup>");
+    }
+    else if (character == '$')
+    {
+        BUFPUTSL(ob, "</sub>");
+    }
 	return 1;
 }
 
