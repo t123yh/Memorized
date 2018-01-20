@@ -19,7 +19,7 @@
      <item>
       <widget class="QPushButton" name="btn_Prev">
        <property name="text">
-        <string>&lt;&lt; Previous</string>
+        <string>&lt;&lt; Prev</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
