@@ -36,7 +36,7 @@ void
 PlainCardReviewWidget::loadData(const QString& description,
                                 const QJsonDocument& data)
 {
-  ui->lb_Name->setText(description);
+  ui->lb_Name->setText(renderMarkdown(description));
   auto rootObj = data.object();
   currentFront = getStringItem(rootObj, "front");
   currentBack = getStringItem(rootObj, "back");
