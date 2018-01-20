@@ -34,7 +34,15 @@ SOURCES += \
     reviewdialog.cpp \
     cardreviewwidget.cpp \
     plaincardreviewwidget.cpp \
-    reviewutils.cpp
+    reviewutils.cpp \
+    sundown/autolink.c \
+    sundown/buffer.c \
+    sundown/markdown.c \
+    sundown/stack.c \
+    sundown/html_smartypants.c \
+    sundown/html.c \
+    sundown/houdini_html_e.c \
+    sundown/houdini_href_e.c
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +56,14 @@ HEADERS += \
     reviewdialog.h \
     cardreviewwidget.h \
     plaincardreviewwidget.h \
-    reviewutils.h
+    reviewutils.h \
+    sundown/autolink.h \
+    sundown/buffer.h \
+    sundown/html_blocks.h \
+    sundown/markdown.h \
+    sundown/stack.h \
+    sundown/html.h \
+    sundown/houdini.h
 
 FORMS += \
         mainwindow.ui \
