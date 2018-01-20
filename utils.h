@@ -41,4 +41,7 @@ Crash(const char* reason);
 QString
 getStringItem(const QJsonObject& obj, const char* name);
 
+QString
+renderMarkdown(const QString& source);
+
 #endif // CONSTANTS_H

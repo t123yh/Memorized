@@ -1,5 +1,9 @@
 #include "utils.h"
 
+#include "sundown/buffer.h"
+#include "sundown/html.h"
+#include "sundown/markdown.h"
+
 #include <QDateTime>
 #include <QDebug>
 #include <QJsonDocument>
@@ -91,4 +95,25 @@ getStringItem(const QJsonObject& obj, const char* name)
     return "";
   else
     return iter->toString();
+}
+
+QString
+renderMarkdown(const QString& source)
+{
+  auto input = source.toUtf8();
+  sd_callbacks callbacks;
+  html_renderopt options;
+  buf* ob;
+  ob = bufnew(input.size() * 2);
+
+  sdhtml_renderer(&callbacks, &options, 0);
+  sd_markdown* md = sd_markdown_new(0, 16, &callbacks, &options);
+
+  sd_markdown_render(ob, (unsigned char*)input.data(), input.size(), md);
+  QByteArray result((char*)ob->data, ob->size);
+
+  sd_markdown_free(md);
+  bufrelease(ob);
+
+  return QString::fromUtf8(result);
 }

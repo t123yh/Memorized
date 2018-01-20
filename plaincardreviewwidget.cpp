@@ -90,17 +90,17 @@ PlainCardReviewWidget::showContent()
 {
   QString str;
   if (!currentFront.isEmpty()) {
-    str += QString("<b>Front</b><br/>");
-    str += QString(currentFront);
+    str += QString("<h2>Front</h2>");
+    str += renderMarkdown(currentFront);
   }
   if (backShown) {
     if (!currentBack.isEmpty()) {
-      str += QString("<br/><b>Back</b><br/>");
-      str += currentBack;
+      str += QString("<h2>Back</h2>");
+      str += renderMarkdown(currentBack);
     }
     if (!currentNotes.isEmpty()) {
-      str += QString("<br/><b>Notes</b><br/>");
-      str += currentNotes;
+      str += QString("<h2>Notes</h2>");
+      str += renderMarkdown(currentNotes);
     }
   }
   if (!str.isEmpty()) {
