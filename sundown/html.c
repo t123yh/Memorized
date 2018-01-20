@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009, Natacha Porté
  * Copyright (c) 2011, Vicent Marti
  *
@@ -223,10 +223,10 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 	if (options->flags & HTML_TOC)
 		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
 	else
-		bufprintf(ob, "<h%d>", level);
+        bufprintf(ob, "<h%d>", level + options->header_offset);
 
 	if (text) bufput(ob, text->data, text->size);
-	bufprintf(ob, "</h%d>\n", level);
+    bufprintf(ob, "</h%d>\n", level + options->header_offset);
 }
 
 static int
@@ -632,6 +632,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 	/* Prepare the options pointer */
 	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = render_flags;
+    options->header_offset = 0;
 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));

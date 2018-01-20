@@ -98,7 +98,7 @@ getStringItem(const QJsonObject& obj, const char* name)
 }
 
 QString
-renderMarkdown(const QString& source)
+renderMarkdown(const QString& source, int headerOffset)
 {
   auto input = source.toUtf8();
   sd_callbacks callbacks;
@@ -107,6 +107,7 @@ renderMarkdown(const QString& source)
   ob = bufnew(input.size() * 2);
 
   sdhtml_renderer(&callbacks, &options, 0);
+  options.header_offset = headerOffset;
   sd_markdown* md = sd_markdown_new(MKDEXT_SUPERSCRIPT, 16, &callbacks, &options);
 
   sd_markdown_render(ob, (unsigned char*)input.data(), input.size(), md);

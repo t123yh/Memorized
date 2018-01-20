@@ -34,6 +34,8 @@ struct html_renderopt {
 
 	unsigned int flags;
 
+    int header_offset;
+
 	/* extra callbacks */
 	void (*link_attributes)(struct buf *ob, const struct buf *url, void *self);
 };

@@ -42,6 +42,6 @@ QString
 getStringItem(const QJsonObject& obj, const char* name);
 
 QString
-renderMarkdown(const QString& source);
+renderMarkdown(const QString& source, int headerOffset = 0);
 
 #endif // CONSTANTS_H
