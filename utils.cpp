@@ -107,7 +107,7 @@ renderMarkdown(const QString& source)
   ob = bufnew(input.size() * 2);
 
   sdhtml_renderer(&callbacks, &options, 0);
-  sd_markdown* md = sd_markdown_new(0, 16, &callbacks, &options);
+  sd_markdown* md = sd_markdown_new(MKDEXT_SUPERSCRIPT, 16, &callbacks, &options);
 
   sd_markdown_render(ob, (unsigned char*)input.data(), input.size(), md);
   QByteArray result((char*)ob->data, ob->size);
