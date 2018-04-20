@@ -108,7 +108,7 @@ renderMarkdown(const QString& source, int headerOffset)
 
   sdhtml_renderer(&callbacks, &options, 0);
   options.header_offset = headerOffset;
-  sd_markdown* md = sd_markdown_new(MKDEXT_SUPERSCRIPT, 16, &callbacks, &options);
+  sd_markdown* md = sd_markdown_new(MKDEXT_SUPERSCRIPT | MKDEXT_TABLES, 16, &callbacks, &options);
 
   sd_markdown_render(ob, (unsigned char*)input.data(), input.size(), md);
   QByteArray result((char*)ob->data, ob->size);
