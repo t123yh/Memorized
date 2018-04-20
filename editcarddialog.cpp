@@ -104,6 +104,7 @@ EditCardDialog::on_editor_ValueChanged()
 void
 EditCardDialog::on_btn_Cancel_clicked()
 {
+    /*
   if (this->valueChanged) {
     QMessageBox::StandardButton reply = QMessageBox::question(
       this,
@@ -114,5 +115,6 @@ EditCardDialog::on_btn_Cancel_clicked()
       return;
     }
   }
+  */
   reject();
 }
