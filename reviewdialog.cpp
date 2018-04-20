@@ -53,8 +53,8 @@ ReviewDialog::startReviewSession(int groupId)
   QSqlQuery query;
   QString selectQuery("SELECT `Id` FROM `cards` "),
     orderClause(" ORDER BY  ("
-                "cast(julianday('now') + 0.5 as integer) - cast(julianday(`LastReviewed`) + 0.5 as integer)"
-                ") / `DaysBetweenReviews` DESC");
+                "cast(cast(julianday('now') + 0.5 as integer) - cast(julianday(`LastReviewed`) + 0.5 as integer) as real)"
+                ") / cast(`DaysBetweenReviews` as real) DESC");
   if (groupId != GROUP_ALL) {
     QString whereClause(" WHERE `GroupId` = :group_id ");
     query.prepare(selectQuery + whereClause + orderClause);
