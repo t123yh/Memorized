@@ -111,7 +111,7 @@ ReviewDialog::commitReviews()
                               : 1;
 
     difficulty +=
-      percentOverdue * (1.0 / 17.0) * (8.0 - 9.0 * performanceRating);
+      percentOverdue * (1.0 / 17.0) * (6.0 - 9.0 * performanceRating);
     if (difficulty < 0)
       difficulty = 0;
     if (difficulty > 1)
@@ -120,7 +120,7 @@ ReviewDialog::commitReviews()
 
     expectedDaysBetweenReviews *=
       correct ? 1 + (difficultyWeight - 1) * percentOverdue
-              : 1 / difficultyWeight * difficultyWeight;
+              : 1 / difficultyWeight / difficultyWeight;
     if (expectedDaysBetweenReviews == 0) {
       expectedDaysBetweenReviews = 1;
     }
