@@ -42,7 +42,8 @@ SOURCES += \
     sundown/html_smartypants.c \
     sundown/html.c \
     sundown/houdini_html_e.c \
-    sundown/houdini_href_e.c
+    sundown/houdini_href_e.c \
+    usermanagementdialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -63,7 +64,8 @@ HEADERS += \
     sundown/markdown.h \
     sundown/stack.h \
     sundown/html.h \
-    sundown/houdini.h
+    sundown/houdini.h \
+    usermanagementdialog.h
 
 FORMS += \
         mainwindow.ui \
@@ -71,7 +73,8 @@ FORMS += \
     plaincardeditorwidget.ui \
     editcarddialog.ui \
     reviewdialog.ui \
-    plaincardreviewwidget.ui
+    plaincardreviewwidget.ui \
+    usermanagementdialog.ui
 
 RESOURCES += \
     resources.qrc

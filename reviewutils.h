@@ -2,6 +2,6 @@
 #define REVIEWUTILS_H
 
 int
-getOverdueItemCount(int groupId);
+getOverdueItemCount(int groupId, int userId);
 
 #endif // REVIEWUTILS_H

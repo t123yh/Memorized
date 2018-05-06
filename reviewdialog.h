@@ -18,7 +18,7 @@ class ReviewDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit ReviewDialog(QWidget* parent = 0);
+  explicit ReviewDialog(int userId, QWidget* parent = 0);
   ~ReviewDialog();
 
 private slots:
@@ -56,6 +56,7 @@ private:
   QHash<int, std::tuple<double, QDateTime> > currentSessionPerformance;
   QVector<int> currentSessionCards;
   int currentCardIndex;
+  int userId;
 };
 
 #endif // REVIEWDIALOG_H

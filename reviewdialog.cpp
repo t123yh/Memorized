@@ -13,9 +13,10 @@
 
 const double CorrectThreshold = 0.6;
 
-ReviewDialog::ReviewDialog(QWidget* parent)
+ReviewDialog::ReviewDialog(int userId, QWidget* parent)
   : QDialog(parent)
   , ui(new Ui::ReviewDialog)
+  , userId(userId)
 {
   ui->setupUi(this);
   showCardGroups();
@@ -51,20 +52,30 @@ ReviewDialog::startReviewSession(int groupId)
   currentSessionCards.clear();
   currentSessionPerformance.clear();
   QSqlQuery query;
-  QString selectQuery("SELECT `Id` FROM `cards` "),
-    orderClause(" ORDER BY  ("
-                "cast(cast(julianday('now') + 0.5 as integer) - cast(julianday(`LastReviewed`) + 0.5 as integer) as real)"
-                ") / cast(`DaysBetweenReviews` as real) DESC");
+  QString selectQuery(
+    "SELECT `user_cards`.`Id` FROM `user_cards` "
+    "INNER JOIN `cards` ON `user_cards`.`CardId` = `cards`.`Id` "),
+    orderClause(
+      " ORDER BY  ("
+      "cast(cast(julianday('now') + 0.5 as integer) - "
+      "cast(julianday(`user_cards`.`LastReviewed`) + 0.5 as integer) as real)"
+      ") / cast(`user_cards`.`DaysBetweenReviews` as real) DESC ");
+
+  QString whereClause(" WHERE `user_cards`.`UserId` = :user_id ");
   if (groupId != GROUP_ALL) {
-    QString whereClause(" WHERE `GroupId` = :group_id ");
-    query.prepare(selectQuery + whereClause + orderClause);
-    query.bindValue(":group_id", groupId);
-  } else {
-    query.prepare(selectQuery + orderClause);
+    whereClause += "AND `cards`.`GroupId` = :group_id ";
   }
+  query.prepare(selectQuery + whereClause + orderClause);
+
+  query.bindValue(":user_id", this->userId);
+  if (groupId != GROUP_ALL) {
+    query.bindValue(":group_id", groupId);
+  }
+
   if (!query.exec()) {
     Crash(query.lastError().text());
   }
+
   while (query.next()) {
     int id = query.value(0).toInt();
     currentSessionCards.push_back(id);
@@ -81,14 +92,14 @@ ReviewDialog::commitReviews()
   for (auto iter = currentSessionPerformance.cbegin();
        iter != currentSessionPerformance.cend();
        iter++) {
-    int cardId = iter.key();
+    int userCardId = iter.key();
     double performanceRating = std::get<0>(iter.value());
     QDateTime reviewTime = std::get<1>(iter.value());
     QSqlQuery query;
-    query.prepare(
-      "SELECT `LastReviewed`, `DaysBetweenReviews`, `Difficulty` FROM `cards` "
-      "WHERE `Id` = :id");
-    query.bindValue(":id", cardId);
+    query.prepare("SELECT `LastReviewed`, `DaysBetweenReviews`, `Difficulty` "
+                  "FROM `user_cards` "
+                  "WHERE `Id` = :id");
+    query.bindValue(":id", userCardId);
     if (!query.exec()) {
       Crash(query.lastError().text());
     }
@@ -127,10 +138,10 @@ ReviewDialog::commitReviews()
 
     query.prepare(
       "INSERT INTO `review_history` "
-      "(`CardId`, `DateTime`, `PerformanceRating`, "
+      "(`UserCardId`, `DateTime`, `PerformanceRating`, "
       "`DifficultyAfter`, `DaysBetweenReviewsAfter`) "
       "VALUES (:id, :currentTime, :rating, :difficulty, :daysBetween)");
-    query.bindValue(":id", cardId);
+    query.bindValue(":id", userCardId);
     query.bindValue(":currentTime", toSqlTime(reviewTime));
     query.bindValue(":rating", performanceRating);
     query.bindValue(":difficulty", difficulty);
@@ -139,11 +150,11 @@ ReviewDialog::commitReviews()
       Crash(query.lastError().text());
     }
 
-    query.prepare("UPDATE `cards` SET `LastReviewed` = :currentTime, "
+    query.prepare("UPDATE `user_cards` SET `LastReviewed` = :currentTime, "
                   "`DaysBetweenReviews` = :daysBetween, "
                   "`Difficulty` = :difficulty "
                   "WHERE `Id` = :id");
-    query.bindValue(":id", cardId);
+    query.bindValue(":id", userCardId);
     query.bindValue(":currentTime", toSqlTime(reviewTime));
     query.bindValue(":difficulty", difficulty);
     query.bindValue(":daysBetween", expectedDaysBetweenReviews);
@@ -163,16 +174,17 @@ ReviewDialog::showCard(int cardIndex)
   currentCardIndex = cardIndex;
   adjustNavigationButton();
 
-  int cardId = currentSessionCards[currentCardIndex];
+  int userCardId = currentSessionCards[currentCardIndex];
   QSqlQuery query;
   query.prepare(
     "SELECT `cards`.`Name`, `cards`.`Data`, `cards`.`Type`, "
-    "`card_groups`.`Name`, `cards`.`LastReviewed`, "
-    "`cards`.`DaysBetweenReviews` "
+    "`card_groups`.`Name`, `user_cards`.`LastReviewed`, "
+    "`user_cards`.`DaysBetweenReviews` "
     "FROM `cards` "
     "INNER JOIN card_groups on `cards`.`GroupId` = `card_groups`.`Id` "
-    "WHERE `cards`.`Id` = :id");
-  query.bindValue(":id", cardId);
+    "INNER JOIN user_cards on `cards`.`Id` = `user_cards`.`CardId` "
+    "WHERE `user_cards`.`Id` = :id");
+  query.bindValue(":id", userCardId);
   if (!query.exec()) {
     Crash(query.lastError().text());
   }
@@ -180,7 +192,8 @@ ReviewDialog::showCard(int cardIndex)
     Crash("No such card!");
   }
 
-  int overdueCount = getOverdueItemCount(getCurrentCardGroup());
+  // TODO: Add userId here
+  int overdueCount = getOverdueItemCount(getCurrentCardGroup(), userId);
   // Hide overdue card count if current card is not overdue
   QString cardCountTemplate =
     currentCardIndex < overdueCount ? "%1 / %3 / %2" : "%1 / %2";
@@ -227,9 +240,9 @@ ReviewDialog::showCard(int cardIndex)
   if (currentReviewWidget != NULL) {
     currentReviewWidget->loadData(cardDescription, dataDoc);
 
-    if (currentSessionPerformance.contains(cardId)) {
+    if (currentSessionPerformance.contains(userCardId)) {
       currentReviewWidget->setPerformanceRating(
-        std::get<0>(currentSessionPerformance[cardId]));
+        std::get<0>(currentSessionPerformance[userCardId]));
     } else {
       currentReviewWidget->resetPerformanceRating();
     }
@@ -283,14 +296,14 @@ void
 ReviewDialog::on_reviewed()
 {
   double rating = currentReviewWidget->getPerformanceRating();
-  int cardId = currentSessionCards[currentCardIndex];
+  int userCardId = currentSessionCards[currentCardIndex];
   if (rating < 0) {
-    if (currentSessionPerformance.contains(cardId)) {
-      currentSessionPerformance.remove(cardId);
+    if (currentSessionPerformance.contains(userCardId)) {
+      currentSessionPerformance.remove(userCardId);
     }
     return;
   }
-  currentSessionPerformance[cardId] =
+  currentSessionPerformance[userCardId] =
     std::make_tuple(rating, QDateTime::currentDateTime());
 }
 

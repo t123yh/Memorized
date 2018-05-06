@@ -3,13 +3,14 @@
 #include <QtSql>
 
 int
-getOverdueItemCount(int groupId)
+getOverdueItemCount(int groupId, int userId)
 {
   QSqlQuery query;
-  QString queryText("SELECT count(*) FROM cards "
+  QString queryText("SELECT count(*) FROM user_cards "
                     "WHERE (cast(julianday('now') + 0.5 as integer) - "
                     "cast(julianday(`LastReviewed`) + 0.5 as integer))"
-                    "    >= `DaysBetweenReviews`");
+                    "    >= `DaysBetweenReviews`"
+                    " AND UserId = :userId");
 
   if (groupId == GROUP_ALL) {
     query.prepare(queryText);
@@ -17,6 +18,7 @@ getOverdueItemCount(int groupId)
     query.prepare(queryText + " AND `GroupId` = :gid");
     query.bindValue(":gid", groupId);
   }
+  query.bindValue(":userId", userId);
   if (!query.exec()) {
     Crash(query.lastError().text());
   }

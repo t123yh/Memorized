@@ -22,10 +22,12 @@ private slots:
 
     void on_btn_Review_clicked();
 
+    void on_btn_Users_clicked();
+
 private:
     Ui::MainWindow *ui;
 
-    void refreshCount();
+    void refreshUser();
 };
 
 #endif // MAINWINDOW_H

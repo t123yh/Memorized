@@ -8,7 +8,7 @@
 #include <QtSql>
 
 void
-executeQueriesFromFile(QFile &file, QSqlQuery &query)
+executeQueriesFromFile(QFile& file, QSqlQuery& query)
 {
   while (!file.atEnd()) {
     QByteArray readLine = "";
@@ -67,6 +67,10 @@ InitDb(const QString& dbName)
 
   if (!db.open()) {
     Crash(QString("Db error: %1").arg(db.lastError().text()));
+  }
+
+  if (db.exec("PRAGMA foreign_keys = ON;").lastError().isValid()) {
+    Crash(QString("Unable to turn on foreign key constraint."));
   }
 
   QStringList tables = db.tables();

@@ -39,8 +39,7 @@ CardsDialog::initializeModels()
   int groupIdIndex = cardsModel->fieldIndex("GroupId");
   cardsModel->setRelation(groupIdIndex,
                           QSqlRelation("card_groups", "Id", "Name"));
-  cardsModel->setSort(cardsModel->fieldIndex("Created"),
-                           Qt::DescendingOrder);
+  cardsModel->setSort(cardsModel->fieldIndex("Created"), Qt::DescendingOrder);
   cardsModel->select();
 
   cardGroupsModel = new QSqlTableModel(this);
@@ -53,14 +52,11 @@ CardsDialog::initializeModels()
   // ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("GroupId")); // You cannot
   // use this one here
   ui->tbl_Cards->hideColumn(groupIdIndex);
-  ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("DaysBetweenReviews"));
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Id"));
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Data"));
   ui->tbl_Cards->hideColumn(cardsModel->fieldIndex("Type"));
   ui->tbl_Cards->setItemDelegateForColumn(cardsModel->fieldIndex("Created"),
                                           new DateTimeDisplayDelegate);
-  ui->tbl_Cards->setItemDelegateForColumn(
-    cardsModel->fieldIndex("LastReviewed"), new DateTimeDisplayDelegate);
 }
 
 int
@@ -128,22 +124,41 @@ CardsDialog::on_btn_AddCard_clicked()
     // instead.
     QSqlQuery query;
     query.prepare(
-      "INSERT INTO `cards` (`Name`, `Type`, `Data`, `LastReviewed`, "
-      "`Difficulty`, `DaysBetweenReviews`, `GroupId`, `Created`) "
-      "VALUES (:name, :type, :data, :lastreviewed, "
-      ":difficulty, :daysbetweenreviews, :groupid, :created)");
+      "INSERT INTO `cards` (`Name`, `Type`, `Data`, `GroupId`, `Created`) "
+      "VALUES (:name, :type, :data, :groupid, :created)");
     query.bindValue(":name", dialog.getCurrentName());
     query.bindValue(":type", dialog.getCurrentType());
     auto cardData =
       QString(dialog.getCurrentData().toJson(QJsonDocument::Compact));
     query.bindValue(":data", cardData);
-    query.bindValue(":lastreviewed", getCurrentDateTime());
     query.bindValue(":created", getCurrentDateTime());
-    query.bindValue(":difficulty", 0.3);
-    query.bindValue(":daysbetweenreviews", 1);
     query.bindValue(":groupid", getCurrentGroupId());
     if (!query.exec()) {
       Crash(query.lastError().text());
+    }
+    int cardId = query.lastInsertId().toInt();
+
+    QSqlQuery userQuery;
+    userQuery.prepare("SELECT `Id`, `Name` FROM `users`");
+    if (!userQuery.exec()) {
+      Crash(userQuery.lastError().text());
+    }
+    while (userQuery.next()) {
+      int userId = userQuery.value(0).toInt();
+      QSqlQuery insertQuery;
+      insertQuery.prepare(
+        "INSERT INTO `user_cards` (`UserId`, `CardId`, `Difficulty`, "
+        "`LastReviewed`, `DaysBetweenReviews`) values "
+        "(:uid, :cid, :difficulty, :lastReviewed, :daysBetweenReviews)");
+      insertQuery.bindValue(":uid", userId);
+      insertQuery.bindValue(":cid", cardId);
+      insertQuery.bindValue(":difficulty", 0.3);
+      insertQuery.bindValue(":lastReviewed", getCurrentDateTime());
+      insertQuery.bindValue(":daysBetweenReviews", 1);
+
+      if (!insertQuery.exec()) {
+        Crash(insertQuery.lastError().text());
+      }
     }
     showCards();
   }
