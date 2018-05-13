@@ -192,7 +192,6 @@ ReviewDialog::showCard(int cardIndex)
     Crash("No such card!");
   }
 
-  // TODO: Add userId here
   int overdueCount = getOverdueItemCount(getCurrentCardGroup(), userId);
   // Hide overdue card count if current card is not overdue
   QString cardCountTemplate =
